@@ -12,7 +12,7 @@
 
 </script>
     <meta charset="utf-8">
-    <title>Domino</title>
+    <title>PIFO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Le styles -->
@@ -161,6 +161,7 @@ to similarly express many hierarchical schedulers. Section 2.2 of the <a href="p
 </dd>
 
 <dt><p>What can you express using PIFOs?</p></dt>
+<dd>
 <ol>
 <li> Variants of priority scheduling (Earliest Deadline First, Least Attained Service, etc.)
 <li> <a href="http://cseweb.ucsd.edu/classes/wi01/cse222/papers/demers-fq-ire90.pdf">Weighted Fair Queueing</a>
@@ -171,6 +172,7 @@ Queueing</a>
 </ol>
 Section 2 and 3 of the <a href="pifo-sigcomm.pdf">paper</a> explain these and
 other examples in greater detail.
+</dd>
 
 <dt><p>What can't you express?</p></dt>
 <dd>
@@ -207,7 +209,7 @@ scheduler and cost less than 4% in chip area. An ideal hardware implementation
 would support as many flows as the number of PIFO elements: in the extreme,
 each PIFO element belongs to a distinct flow. We can currently support up to
 2048 flows, so we are still a ways off from 60000 elements/flows. However, we
-do think this can be optimized further.  </p>
+think this can be optimized further.  </p>
 </dd>
 
 	  </dl>
