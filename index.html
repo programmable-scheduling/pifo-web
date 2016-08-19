@@ -1,20 +1,189 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-<meta http-equiv="cache-control" content="max-age=0" />
-<meta http-equiv="cache-control" content="no-cache" />
-<meta http-equiv="expires" content="0" />
-<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-<meta http-equiv="pragma" content="no-cache" />
+  ga('create', 'UA-42573039-1', 'mit.edu');
+  ga('send', 'pageview');
 
-<title>
-Web site for PIFO/Programmable scheduling project
-</title>
-<body>
-<ol>
-<li><a href="pifo-sigcomm.pdf">SIGCOMM' 16 paper on PIFO/programmable scheduling</a>
-<li><a href="https://github.com/programmable-scheduling/pifo-hardware/blob/master/src/rtl/design/pifo.v">Verilog code for PIFO hardware design</a>
-<li><a href="https://github.com/programmable-scheduling/pifo-machine">C++ code for reference model of the PIFO hardware</a>
-<!-- <li><a href="https://github.com/programmable-scheduling/pifo-compiler">Source code repository for WIP PIFO compiler</a> -->
-</ol>
-</body>
+</script>
+    <meta charset="utf-8">
+    <title>Domino</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+
+      /* Custom container */
+      .container-narrow {
+        margin: 0 auto;
+        max-width: 700px;
+      }
+      .container-narrow > hr {
+        margin: 30px 0;
+      }
+
+      /* Main marketing message and sign up button */
+      .jumbotron {
+        margin: 10px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 72px;
+        line-height: 1;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      /* Supporting marketing content */
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+    </style>
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+  </head>
+
+  <body>
+
+    <div class="container-narrow">
+
+      <div class="masthead">
+        <h3><span class="text-error">Packet Transactions: High-Level Programming for Line-Rate Switches</h3>
+	<p class="text-right muted">
+        by Anirudh Sivaraman, Alvin Cheung, Mihai Budiu, Changhoon Kim, Mohammad Alizadeh,<br/>
+        Hari Balakrishnan, George Varghese, Nick McKeown, and Steve Licking<br/>
+<br />
+	MIT CSAIL, University of Washington, Barefoot Networks, Microsoft Research, and Stanford University<br />
+	(SIGCOMM 2016)</p>
+
+      </div>
+      <hr>
+
+      <div class="jumbotron">
+	<p class="text-left lead">
+     Domino is a system to program the data plane of high-speed programmable
+     routers and help design such programmable routers in the first place. Domino
+     provides two constructs: a high-level abstraction called a packet transaction
+     that allows programmers to conveniently express data-plane algorithms, and a
+     low-level abstraction called an atom that allows router designers to specify
+     their instruction sets. A compiler automatically configures atoms from packet
+     transactions, and can also be used interactively to design atoms.
+</p>
+
+        <a class="btn btn-primary" href="domino-sigcomm.pdf">The Domino paper</a>
+        <a class="btn btn-success" href=#instructions>Source code</a>
+      </div>
+
+      <hr>
+      <section id="faq">
+	<div class="page-header">
+	  <h3>Frequently Asked Questions</h3>
+	</div>
+
+	<div class="row">
+	<div class="span8">
+	  <dl>
+
+<dt><p>What motivated this work?</p></dt>
+<dd><p>
+Today, the internals of a data network (i.e., the routers and switches that
+forward packets) are largely treated as fixed devices whose functionality
+cannot be modified. This is because they are built out of dedicated hardware
+specialized to forwarding. Further, this hardware cannot be modified once built.
+</p>
+
+<p>
+ As a result, there is no pathway to trying out any algorithm that requires
+changing switch hardware. Examples of these include algorithms for network
+measurement, congestion control with network support, network security
+algorithms and load balancing---essentially anything that modifies or inspects
+the packet (header or data) as it transits the switch. Our goal was to see how
+to make router hardware flexible enough to support such algorithms, while
+still providing high performance.
+</p></dd>
+	  </dl>
+	</div>
+	</div>
+      </section>
+
+      <section id="instructions">
+	<div class="page-header">
+	  <h3>Getting Started</h3>
+	</div>
+        <ol>
+        <li> There are two pieces of software to install. Each has a README with rough installation instructions.
+        <li> These instructions should work on a recent Ubuntu or Mac OS/X. If you have trouble, please email us!
+        <li> First, install the <a href="https://github.com/packet-transactions/banzai">Banzai machine</a>.
+        <li> Second, install the <a href="https://github.com/packet-transactions/domino-compiler">Domino compiler</a>.
+         <li> Then, compile the programs available <a href="https://github.com/packet-transactions/domino-examples">here</a>, using either run_expts.py (to run multiple programs on multiple atom types) or compile.sh (to run a single program on a single atom type).
+         <li> run_expts.py should take around 10 minutes to complete using the inputs domino_programs.list and atom_templates.list. compile.sh should take under a minute for most programs.
+        </ol>
+      </section>
+
+      <section id="contact">
+	<div class="page-header">
+	  <h3>Contact</h3>
+	</div>
+
+	<p>This work is by
+        <a href="http://web.mit.edu/anirudh/www/">Anirudh Sivaraman</a>,
+        <a href="https://homes.cs.washington.edu/~akcheung/">Suvinay Subramanian</a>,
+        <a href="http://budiu.info/work/">Mohammad Alizadeh</a>,
+        <a href="https://www.linkedin.com/in/changhoon-kim-b3394317">Sharad Chole</a>,
+        <a href="https://people.csail.mit.edu/alizadeh/">Shang-Tse Chuang</a>,
+        <a href="http://nms.lcs.mit.edu/~hari/">Anurag Agrawal</a>,
+        <a href="https://cseweb.ucsd.edu/~varghese/">Hari Balakrishnan</a>,
+        <a href="http://yuba.stanford.edu/~nickm/">Tom Edsall</a>,
+        <a href="http:// ">Sachin Katti</a>, and
+        <a href="https://www.li">Nick McKeown</a>.
+        For questions/comments, please e-mail <code>anirudh at csail dot mit dot
+        edu</code></p>
+
+      </section>
+
+      <div class="footer">
+        <!-- <p>&copy; Company 2013</p> --!>
+      </div>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/js/jquery-2.0.3.min.js"></script>
+    <script src="assets/js/bootstrap-transition.js"></script>
+    <script src="assets/js/bootstrap-alert.js"></script>
+    <script src="assets/js/bootstrap-modal.js"></script>
+    <script src="assets/js/bootstrap-dropdown.js"></script>
+    <script src="assets/js/bootstrap-scrollspy.js"></script>
+    <script src="assets/js/bootstrap-tab.js"></script>
+    <script src="assets/js/bootstrap-tooltip.js"></script>
+    <script src="assets/js/bootstrap-popover.js"></script>
+    <script src="assets/js/bootstrap-button.js"></script>
+    <script src="assets/js/bootstrap-collapse.js"></script>
+    <script src="assets/js/bootstrap-carousel.js"></script>
+    <script src="assets/js/bootstrap-typeahead.js"></script>
+
+  </body>
 </html>
