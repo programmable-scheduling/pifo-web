@@ -69,12 +69,12 @@
     <div class="container-narrow">
 
       <div class="masthead">
-        <h3><span class="text-error">Packet Transactions: High-Level Programming for Line-Rate Switches</h3>
+        <h3><span class="text-error">Programmable Packet Scheduling at Line Rate</h3>
 	<p class="text-right muted">
-        by Anirudh Sivaraman, Alvin Cheung, Mihai Budiu, Changhoon Kim, Mohammad Alizadeh,<br/>
-        Hari Balakrishnan, George Varghese, Nick McKeown, and Steve Licking<br/>
+        by Anirudh Sivaraman, Suvinay Subramanian, Mohammad Alizadeh, Sharad Chole, Shang-Tse Chuang, <br/>
+        Anurag Agrawal, Hari Balakrishnan, Tom Edsall, Sachin Katti, and Nick McKeown<br/>
 <br />
-	MIT CSAIL, University of Washington, Barefoot Networks, Microsoft Research, and Stanford University<br />
+	MIT CSAIL, Cisco Systems, Barefoot Networks, and Stanford University<br />
 	(SIGCOMM 2016)</p>
 
       </div>
@@ -82,16 +82,15 @@
 
       <div class="jumbotron">
 	<p class="text-left lead">
-     Domino is a system to program the data plane of high-speed programmable
-     routers and help design such programmable routers in the first place. Domino
-     provides two constructs: a high-level abstraction called a packet transaction
-     that allows programmers to conveniently express data-plane algorithms, and a
-     low-level abstraction called an atom that allows router designers to specify
-     their instruction sets. A compiler automatically configures atoms from packet
-     transactions, and can also be used interactively to design atoms.
+     The Push-In First-Out Queue (PIFO) is a priority queue data structure that allows
+     packets to be "pushed" (enqueued) into an arbitrary location in the queue, but only
+     dequeued from the head. PIFOs enable programmable packet scheduling: by programming
+     how each packet's location in the PIFO is computed as it arrives, PIFOs allow network
+     operators to express a wide variety of practical schedulers. Further, PIFOs are feasible
+     in hardware at the high clock rates (1 GHz) typical of high-end switches today.
 </p>
 
-        <a class="btn btn-primary" href="domino-sigcomm.pdf">The Domino paper</a>
+        <a class="btn btn-primary" href="pifo-sigcomm.pdf">The PIFO paper</a>
         <a class="btn btn-success" href=#instructions>Source code</a>
       </div>
 
@@ -107,20 +106,26 @@
 
 <dt><p>What motivated this work?</p></dt>
 <dd><p>
-Today, the internals of a data network (i.e., the routers and switches that
-forward packets) are largely treated as fixed devices whose functionality
-cannot be modified. This is because they are built out of dedicated hardware
-specialized to forwarding. Further, this hardware cannot be modified once built.
+Today's switch schedulers are fixed. As an operator, beyond tweaking a few
+parameters in an existing scheduling algorithm, there is no way to express a
+new scheduling algorithm once a switch has been built.
 </p>
 
 <p>
- As a result, there is no pathway to trying out any algorithm that requires
-changing switch hardware. Examples of these include algorithms for network
-measurement, congestion control with network support, network security
-algorithms and load balancing---essentially anything that modifies or inspects
-the packet (header or data) as it transits the switch. Our goal was to see how
-to make router hardware flexible enough to support such algorithms, while
-still providing high performance.
+This capability to program a switch is useful in many ways. It allows network
+operators to customize their network by running specific schedulers for
+specific application objectives. For instance, the <a
+href="http://web.stanford.edu/~skatti/pubs/sigcomm13-pfabric.pdf"> shortest
+remaining processing time scheduler</a> minimizes flow completion times, <a
+href="http://cseweb.ucsd.edu/classes/wi01/cse222/papers/demers-fq-ire90.pdf">fair
+queueing</a> shares constrained link capacity equitably among contending flows,
+and <a href="https://people.eecs.berkeley.edu/~rachit/ups.pdf">least slack time
+first</a> minimizes tail packet delays. Yet, despite demonstrating significant
+benefits in simulations, these schedulers haven't been realized in practice
+because there is no way to modify an existing switch to support a new
+scheduler.  PIFOs aim to change that by making the switch scheduler
+programmable.
+
 </p></dd>
 	  </dl>
 	</div>
@@ -132,12 +137,8 @@ still providing high performance.
 	  <h3>Getting Started</h3>
 	</div>
         <ol>
-        <li> There are two pieces of software to install. Each has a README with rough installation instructions.
-        <li> These instructions should work on a recent Ubuntu or Mac OS/X. If you have trouble, please email us!
-        <li> First, install the <a href="https://github.com/packet-transactions/banzai">Banzai machine</a>.
-        <li> Second, install the <a href="https://github.com/packet-transactions/domino-compiler">Domino compiler</a>.
-         <li> Then, compile the programs available <a href="https://github.com/packet-transactions/domino-examples">here</a>, using either run_expts.py (to run multiple programs on multiple atom types) or compile.sh (to run a single program on a single atom type).
-         <li> run_expts.py should take around 10 minutes to complete using the inputs domino_programs.list and atom_templates.list. compile.sh should take under a minute for most programs.
+        <li><a href="https://github.com/programmable-scheduling/pifo-hardware/blob/master/src/rtl/design/pifo.v">Verilog code for PIFO hardware design</a>
+        <li><a href="https://github.com/programmable-scheduling/pifo-machine">C++ code for reference model of the PIFO hardware</a>
         </ol>
       </section>
 
@@ -148,15 +149,15 @@ still providing high performance.
 
 	<p>This work is by
         <a href="http://web.mit.edu/anirudh/www/">Anirudh Sivaraman</a>,
-        <a href="https://homes.cs.washington.edu/~akcheung/">Suvinay Subramanian</a>,
-        <a href="http://budiu.info/work/">Mohammad Alizadeh</a>,
-        <a href="https://www.linkedin.com/in/changhoon-kim-b3394317">Sharad Chole</a>,
-        <a href="https://people.csail.mit.edu/alizadeh/">Shang-Tse Chuang</a>,
-        <a href="http://nms.lcs.mit.edu/~hari/">Anurag Agrawal</a>,
-        <a href="https://cseweb.ucsd.edu/~varghese/">Hari Balakrishnan</a>,
-        <a href="http://yuba.stanford.edu/~nickm/">Tom Edsall</a>,
-        <a href="http:// ">Sachin Katti</a>, and
-        <a href="https://www.li">Nick McKeown</a>.
+        <a href="http://people.csail.mit.edu/suvinay/">Suvinay Subramanian</a>,
+        <a href="https://people.csail.mit.edu/alizadeh">Mohammad Alizadeh</a>,
+        <a href="">Sharad Chole</a>,
+        <a href="https://www.linkedin.com/in/da-chuang-001253">Shang-Tse Chuang</a>,
+        <a href="https://www.linkedin.com/in/profileofanuragagrawal">Anurag Agrawal</a>,
+        <a href="http://nms.lcs.mit.edu/~hari/">Hari Balakrishnan</a>,
+        <a href="https://www.linkedin.com/in/tomedsall">Tom Edsall</a>,
+        <a href="http://stanford.edu/~skatti/">Sachin Katti</a>, and
+        <a href="http://yuba.stanford.edu/~nickm/">Nick McKeown</a>.
         For questions/comments, please e-mail <code>anirudh at csail dot mit dot
         edu</code></p>
 
