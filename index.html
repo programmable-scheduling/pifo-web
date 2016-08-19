@@ -115,12 +115,16 @@ new scheduling algorithm once a switch has been built.
 This capability to program a switch is useful in many ways. It allows network
 operators to customize their network by running specific schedulers for
 specific application objectives. For instance, the <a
-href="http://web.stanford.edu/~skatti/pubs/sigcomm13-pfabric.pdf"> shortest
-remaining processing time scheduler</a> minimizes flow completion times, <a
-href="http://cseweb.ucsd.edu/classes/wi01/cse222/papers/demers-fq-ire90.pdf">fair
-queueing</a> shares constrained link capacity equitably among contending flows,
+href="http://web.stanford.edu/~skatti/pubs/sigcomm13-pfabric.pdf">Shortest
+Remaining Processing Time scheduler</a> minimizes flow completion times, <a
+href="http://cseweb.ucsd.edu/classes/wi01/cse222/papers/demers-fq-ire90.pdf">Fair
+Queueing</a> shares constrained link capacity equitably among contending flows,
 and <a href="https://people.eecs.berkeley.edu/~rachit/ups.pdf">least slack time
-first</a> minimizes tail packet delays. Yet, despite demonstrating significant
+first</a> minimizes tail packet delays.
+</p>
+
+<p>
+Yet, despite demonstrating significant
 benefits in simulations, these schedulers haven't been realized in practice
 because there is no way to modify an existing switch to support a new
 scheduler.  PIFOs aim to change that by making the switch scheduler
@@ -128,12 +132,83 @@ programmable.
 </p></dd>
 
 <dt><p>How do PIFOs work?</p></dt>
+<dd><p>
+Any scheduling algorithm makes two decisions: in what order packets are
+transmitted and when? PIFOs exploit the observation that in many practical
+schedulers, these decisions can be made as the packet is enqueued. Put differently,
+a packet's place in the scheduling order or its scheduling time can be determined
+at enqueue, exploiting the fact that the relative order of already buffered packets
+does not need to change.
+</p>
+
+<p>An example of this is strict priority scheduling, where each packet has a
+priority associated with it. Using this priority, a packet can be enqueued into
+its right location in an array that maintains scheduling order. Further,
+packets that are already enqueued don't need to be reordered relative to each
+other. This sorted array is the PIFO, and a packet's location is determined by
+writing a program to compute it every time a packet arrives. This program computing
+packet locations is what makes PIFOs programmable.</p>
+
+<p>Now, there are algorithms where the relative order of already buffered packets
+does need to change with new packet arrivals. An example is
+<a href="http://www.cs.cmu.edu/~hzhang/papers/TON-97-Oct.pdf">Hierarchical Packet Fair
+Queueing</a> (HPFQ), which divides link capacity among classes in some ratio, and then recursively
+in some ration between flows within a class, and so on. However, with a minor change
+to the PIFO to enqueue either a packet or a pointer to another PIFO, HPFQ can be implemented
+using a tree of PIFOs. This ability to compose PIFOs together is powerful and allows us
+to similarly express many hierarchical schedulers. Section 2.2 of the <a href="pifo-sigcomm.pdf">paper</a> has further details.
+</p>
+</dd>
 
 <dt><p>What can you express using PIFOs?</p></dt>
+<ol>
+<li> Variants of priority scheduling (Earliest Deadline First, Least Attained Service, etc.)
+<li> <a href="http://cseweb.ucsd.edu/classes/wi01/cse222/papers/demers-fq-ire90.pdf">Weighted Fair Queueing</a>
+<li> <a href="http://www.cs.cmu.edu/~hzhang/papers/TON-97-Oct.pdf">Hierarchical Packet Fair
+Queueing</a>
+<li> Traffic shaping (maximum rate limits) in the form of token buckets
+<li> Minimum rate limits on particular flows
+</ol>
+Section 2 and 3 of the <a href="pifo-sigcomm.pdf">paper</a> explain these and
+other examples in greater detail.
 
 <dt><p>What can't you express?</p></dt>
+<dd>
+<p>
+PIFOs can't express algorithms where dequeues from a particular flow are
+limited to a specific maximum rate. While PIFOs can express a maximum flow rate
+limit before packets are enqueued into a PIFO, they can't do so on the dequeue
+side. Section 3.5 of the <a href="pifo-sigcomm.pdf">paper</a> explains
+this.</p>
+</dd>
 
-<dt><p>How practical is a PIFO?</p></dt>
+<dt><p>How practical is a PIFO in hardware?</p></dt>
+<dd>
+<p>We implemented a PIFO in <a
+href="https://github.com/programmable-scheduling/pifo-hardware/blob/master/src/rtl/design/pifo.v">Verilog</a>.
+Our hardware design exploits the fact that most schedulers schedule across
+flows, not packets. For these schedulers, a packet's priority in a PIFO increases
+monotonically within a flow. Exploiting this fact, we sort only the head
+packets of all flows, and store the remaining packets in a bank of first-in
+first-out queues (FIFOs).
+</p>
+
+<p>Our hardware implementation is a sorted array of these head packets. An incoming
+packet from a new flow is inserted in the right location by comparing its priority
+in parallel to all head packets and then shifting the array to accomodate the new
+packet. When the PIFO is dequeued, we shift out the top element of the array, fetch
+the next packet of the just-dequeued flow from the bank of FIFOs, and then insert this
+next packet into the array.
+</p>
+
+<p> Our current implementation supports 1024 flows within a PIFO that stores up
+to 60000 elements. 5 such "PIFO blocks" can implement a 5-level hierarchical
+scheduler and cost less than 4% in chip area. An ideal hardware implementation
+would support as many flows as the number of PIFO elements: in the extreme,
+each PIFO element belongs to a distinct flow. We can currently support up to
+2048 flows, so we are still a ways off from 60000 elements/flows. However, we
+do think this can be optimized further.  </p>
+</dd>
 
 	  </dl>
 	</div>
@@ -146,7 +221,7 @@ programmable.
 	</div>
         <ol>
         <li><a href="https://github.com/programmable-scheduling/pifo-hardware/blob/master/src/rtl/design/pifo.v">Verilog code for PIFO hardware design</a>
-        <li><a href="https://github.com/programmable-scheduling/pifo-machine">C++ code for reference model of the PIFO hardware</a>
+        <li><a href="https://github.com/programmable-scheduling/pifo-machine">C++ code for reference model of the PIFO hardware</a>. The README contains installation instructions.
         </ol>
       </section>
 
